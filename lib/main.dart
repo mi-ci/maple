@@ -32,6 +32,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _flag = '';
   List itemList = [];
   String androidIcon = '';
+  String characterImage = '';
   List<String> imageList = [];
 
   ////////////////////////
@@ -49,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     if (response.statusCode == 200) {
-      print("200성공~~");
+      print("200성공~~1");
       final Map<String, dynamic> data = json.decode(response.body);
       setState(() {
         _ocid = data['ocid'] ?? 'OCID not found';
@@ -74,11 +75,30 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     if (response3.statusCode == 200) {
-      print("200성공~~");
+      print("200성공~~2");
       final Map<String, dynamic> data = json.decode(response3.body);
       setState(() {
-        androidIcon = data['android_icon'];
-        _error = '';
+        if (data['android_icon'] != null) {
+          androidIcon = data['android_icon'];
+        }
+      });
+    }
+
+    final response4 = await http.get(
+      Uri.parse(
+          'https://open.api.nexon.com/maplestory/v1/character/basic?ocid=$_ocid'),
+      headers: {
+        'Accept': 'application/json',
+        'x-nxopen-api-key':
+            'test_c3c7513e49d03f4c0d14389cf14e274f5504d6b6b0f373662f022b8f07304e4b356397c41c1a3eef638d09601b2f4f18',
+      },
+    );
+
+    if (response4.statusCode == 200) {
+      print("200성공~~2");
+      final Map<String, dynamic> data = json.decode(response4.body);
+      setState(() {
+        characterImage = data['character_image'];
       });
     }
 
@@ -93,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     if (response2.statusCode == 200) {
-      print("200성공~~");
+      print("200성공~~3");
       final Map<String, dynamic> data = json.decode(response2.body);
       setState(() {
         itemList = data['item_equipment'];
@@ -103,7 +123,6 @@ class _MyHomePageState extends State<MyHomePage> {
           for (Map item in itemList) {
             if (item['item_equipment_slot'] == equipmentName) {
               imageList[i] = item['item_icon'];
-              break;
             }
           }
         }
@@ -118,7 +137,8 @@ class _MyHomePageState extends State<MyHomePage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Equip(imageList: imageList),
+            builder: (context) =>
+                Equip(imageList: imageList, characterImage: characterImage),
           ),
         );
       }

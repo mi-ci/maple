@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 
 class Equip extends StatelessWidget {
   final List<String> imageList;
-  const Equip({Key? key, required this.imageList}) : super(key: key);
+  final String characterImage;
+
+  const Equip({Key? key, required this.imageList, required this.characterImage})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -10,7 +14,24 @@ class Equip extends StatelessWidget {
         appBar: AppBar(
           title: Text('Equipment Grid'),
         ),
-        body: EquipmentGrid(imageList: imageList),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Display the character image at the top
+            Container(
+              padding: EdgeInsets.all(0),
+              child: Image.network(
+                characterImage,
+                height: 200, // Adjust height as needed
+                fit: BoxFit.contain,
+              ),
+            ),
+            // Display the equipment grid
+            Expanded(
+              child: EquipmentGrid(imageList: imageList),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -18,7 +39,6 @@ class Equip extends StatelessWidget {
 
 class EquipmentGrid extends StatelessWidget {
   final List<String> imageList;
-
   const EquipmentGrid({Key? key, required this.imageList}) : super(key: key);
 
   @override
@@ -60,28 +80,58 @@ class EquipmentSlot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: Colors.black26),
-      ),
-      child: Center(
-        child: imageUrl.isNotEmpty
-            ? Image.network(
-                imageUrl,
-                fit: BoxFit.contain,
-              )
-            : Text(
-                label,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 10,
+    return GestureDetector(
+      onTap: () {
+        _showEquipmentPreview(context);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: Colors.black26),
+        ),
+        child: Center(
+          child: imageUrl.isNotEmpty
+              ? Image.network(
+                  imageUrl,
+                  fit: BoxFit.contain,
+                )
+              : Text(
+                  label,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 10,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
+        ),
       ),
+    );
+  }
+
+  void _showEquipmentPreview(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Equipment Preview'),
+          content: imageUrl.isNotEmpty
+              ? Image.network(
+                  imageUrl,
+                  fit: BoxFit.contain,
+                )
+              : Text('No preview available for $label'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
