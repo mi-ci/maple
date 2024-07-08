@@ -358,9 +358,10 @@ class ItemDetailCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('REQ LEV : 150',
+                  Text(
+                      'REQ LEV : ${itemData['item_base_option']['base_equipment_level']}',
                       style: TextStyle(color: Colors.yellow, fontSize: 12)),
-                  Text('장비 분류 : 모자',
+                  Text('장비 분류 : ${itemData['item_equipment_part']}',
                       style: TextStyle(color: Colors.white, fontSize: 12)),
                 ],
               ),
