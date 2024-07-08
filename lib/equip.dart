@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 
@@ -225,6 +227,26 @@ const List<String> equipmentData = [
   '',
   '기계 심장',
 ];
+const Map<String, String> optionData = {
+  "str": "STR",
+  "dex": "DEX",
+  "int": "INT",
+  "luk": "LUK",
+  "attack_power": "공격력",
+  "magic_power": "마력",
+  "max_hp": "최대 HP",
+  "max_mp": "최대 MP",
+  "armor": "방어력",
+  "speed": "이동속도",
+  "jump": "점프력",
+  "boss_damage": "보스 몬스터 공격시 데미지",
+  "ignore_monster_armor": "몬스터 방어율 무시",
+  "all_stat": "올스탯",
+  "damage": "데미지",
+  "equipment_level_decrease": "착용 레벨 감소",
+  "max_hp_rate": "최대 HP",
+  "max_mp_rate": "최대 MP",
+};
 
 const List<Color> equipmentColors = [
   Colors.brown,
@@ -275,6 +297,7 @@ class ItemDetailCard extends StatelessWidget {
         break;
       }
     }
+    itemData;
 
     return Container(
       padding: EdgeInsets.all(8.0),
@@ -328,23 +351,26 @@ class ItemDetailCard extends StatelessWidget {
               ],
             ),
           ),
-
           SizedBox(height: 8),
-          itemData!['scroll_upgrade'] != '0'
-              ? Text(
-                  '${itemData!['item_name']} (+${itemData!['scroll_upgrade']})',
-                  style: TextStyle(color: Colors.orange, fontSize: 12),
-                )
-              : Text(
-                  '${itemData!['item_name']}',
-                  style: TextStyle(color: Colors.orange, fontSize: 12),
-                ),
+          Center(
+            child: itemData!['scroll_upgrade'] != '0'
+                ? Text(
+                    '${itemData!['item_name']} (+${itemData!['scroll_upgrade']})',
+                    style: TextStyle(color: Colors.orange, fontSize: 12),
+                  )
+                : Text(
+                    '${itemData!['item_name']}',
+                    style: TextStyle(color: Colors.orange, fontSize: 12),
+                  ),
+          ),
 
-          SizedBox(height: 8),
+          // SizedBox(height: 8),
           if (itemData['potential_option_grade'] != null)
-            Text('(${itemData!['potential_option_grade']})',
-                style: TextStyle(color: Colors.purple)),
-          SizedBox(height: 8),
+            Center(
+              child: Text('(${itemData!['potential_option_grade']})',
+                  style: TextStyle(color: Colors.purple)),
+            ),
+          // SizedBox(height: 8),
 
           // Item icon and required level
           Row(
@@ -368,23 +394,31 @@ class ItemDetailCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: 8),
-
+          ...itemData['item_total_option']
+              .entries
+              .where((entry) => entry.value.toString() != "0")
+              .toList()
+              .map((entry) => buildStatRow(
+                  optionData[entry.key]!, entry.value.toString(),
+                  additional:
+                      '(${itemData!['item_base_option'][entry.key]}+${itemData!['item_add_option'][entry.key]}+${itemData['item_etc_option'][entry.key]}+${itemData['item_starforce_option'][entry.key]})',
+                  color: Colors.lightBlueAccent)),
           // Item stats
-          buildStatRow('STR', '+65',
-              additional: '(40 +25)', color: Colors.green),
-          buildStatRow('DEX', '+138',
-              additional: '(40 +33 +25)', color: Colors.green),
-          buildStatRow('INT', '+16',
-              additional: '(0 +16)', color: Colors.green),
-          buildStatRow('LUK', '+24',
-              additional: '(0 +24)', color: Colors.green),
-          buildStatRow('최대 HP', '+820',
-              additional: '(360 +130 +330)', color: Colors.green),
-          buildStatRow('최대 MP', '+360'),
-          buildStatRow('공격력', '+6', additional: '(0 +6)', color: Colors.green),
-          buildStatRow('마력', '+6', additional: '(0 +6)', color: Colors.green),
-          buildStatRow('방어력', '+820',
-              additional: '(300 +32 +33 +120)', color: Colors.green),
+          // buildStatRow('STR', '+65',
+          //     additional: '(40 +25)', color: Colors.green),
+          // buildStatRow('DEX', '+138',
+          //     additional: '(40 +33 +25)', color: Colors.green),
+          // buildStatRow('INT', '+16',
+          //     additional: '(0 +16)', color: Colors.green),
+          // buildStatRow('LUK', '+24',
+          //     additional: '(0 +24)', color: Colors.green),
+          // buildStatRow('최대 HP', '+820',
+          //     additional: '(360 +130 +330)', color: Colors.green),
+          // buildStatRow('최대 MP', '+360'),
+          // buildStatRow('공격력', '+6', additional: '(0 +6)', color: Colors.green),
+          // buildStatRow('마력', '+6', additional: '(0 +6)', color: Colors.green),
+          // buildStatRow('방어력', '+820',
+          //     additional: '(300 +32 +33 +120)', color: Colors.green),
 
           Divider(color: Colors.grey),
 
