@@ -1,34 +1,91 @@
 import 'package:flutter/material.dart';
+import 'package:animate_do/animate_do.dart';
 
 class Equip extends StatelessWidget {
   final List<String> imageList;
   final String characterImage;
+  final String power;
+  final String world;
+  final String level;
+  final String exp;
+  final String job;
+  final String name;
+  final Map data;
 
-  const Equip({Key? key, required this.imageList, required this.characterImage})
-      : super(key: key);
+  const Equip({
+    Key? key,
+    required this.imageList,
+    required this.characterImage,
+    required this.power,
+    required this.world,
+    required this.level,
+    required this.exp,
+    required this.job,
+    required this.name,
+    required this.data,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Equipment Grid'),
-        ),
+            title: Center(
+          child: Text(
+            name,
+            style: TextStyle(fontFamily: 'maplebold'),
+          ),
+        )),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Display the character image at the top
             Container(
               padding: EdgeInsets.all(0),
-              child: Image.network(
-                characterImage,
-                height: 200, // Adjust height as needed
-                fit: BoxFit.contain,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: FadeInLeft(
+                    from: 60,
+                    delay: Duration(milliseconds: 500),
+                    duration: Duration(seconds: 1),
+                    child: Text(
+                      '$world \n$job \n레벨 : $level \n경험치 : $exp',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontFamily: 'maplelight'),
+                    ),
+                  )),
+                  SizedBox(width: 10),
+                  Image.network(
+                    characterImage,
+                    height: 100, // Adjust height as needed
+                    fit: BoxFit.contain,
+                  ),
+                  SizedBox(
+                      width: 10), // Add some spacing between image and text
+                  Expanded(
+                      child: FadeInRight(
+                    from: 60,
+                    delay: Duration(milliseconds: 500),
+                    duration: Duration(seconds: 1),
+                    child: Text(
+                      '전투력 \n $power',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontFamily: 'maplebold'),
+                    ),
+                  )),
+                ],
               ),
             ),
             // Display the equipment grid
             Expanded(
-              child: EquipmentGrid(imageList: imageList),
+              child: FadeInUp(
+                from: 60,
+                delay: Duration(milliseconds: 500),
+                duration: Duration(seconds: 1),
+                child: EquipmentGrid(imageList: imageList, data: data),
+              ),
             ),
           ],
         ),
@@ -39,12 +96,14 @@ class Equip extends StatelessWidget {
 
 class EquipmentGrid extends StatelessWidget {
   final List<String> imageList;
-  const EquipmentGrid({Key? key, required this.imageList}) : super(key: key);
+  final Map data;
+  const EquipmentGrid({Key? key, required this.imageList, required this.data})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(58.0),
       child: GridView.count(
         crossAxisCount: 5,
         childAspectRatio: 1,
@@ -56,10 +115,10 @@ class EquipmentGrid extends StatelessWidget {
             return Container(); // Empty container for empty slots
           }
           return EquipmentSlot(
-            label: equipmentData[index],
-            color: equipmentColors[index],
-            imageUrl: imageUrl,
-          );
+              label: equipmentData[index],
+              color: equipmentColors[index],
+              imageUrl: imageUrl,
+              data: data);
         }),
       ),
     );
@@ -70,12 +129,14 @@ class EquipmentSlot extends StatelessWidget {
   final String label;
   final Color color;
   final String imageUrl;
+  final Map data;
 
   const EquipmentSlot(
       {Key? key,
       required this.label,
       required this.color,
-      required this.imageUrl})
+      required this.imageUrl,
+      required this.data})
       : super(key: key);
 
   @override
@@ -115,12 +176,8 @@ class EquipmentSlot extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Equipment Preview'),
           content: imageUrl.isNotEmpty
-              ? Image.network(
-                  imageUrl,
-                  fit: BoxFit.contain,
-                )
+              ? ItemDetailCard(imageUrl: imageUrl, data: data)
               : Text('No preview available for $label'),
           actions: [
             TextButton(
@@ -139,7 +196,7 @@ class EquipmentSlot extends StatelessWidget {
 const List<String> equipmentData = [
   '반지1',
   '',
-  '망토',
+  '모자',
   '',
   '엠블렘',
   '반지2',
@@ -201,3 +258,166 @@ const List<Color> equipmentColors = [
   Colors.transparent,
   Colors.grey,
 ];
+
+///////////////////////////////////////////////////
+
+class ItemDetailCard extends StatelessWidget {
+  final String imageUrl;
+  final Map data;
+  ItemDetailCard({required this.imageUrl, required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    Map? itemData;
+    for (Map i in data['item_equipment']) {
+      if (i['item_icon'] == imageUrl) {
+        itemData = i;
+        break;
+      }
+    }
+
+    return Container(
+      padding: EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade800,
+        border: Border.all(color: Colors.grey.shade700),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      width: 300,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Top section with stars and item name
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Wrap(
+                  spacing: 4.0, // Space between stars in a row
+                  alignment: WrapAlignment.center,
+                  children: [
+                    for (int i = 0; i < 15; i++) ...[
+                      Icon(
+                        Icons.star,
+                        color: i < int.parse(itemData!['starforce'])
+                            ? Colors.yellow
+                            : Colors.grey,
+                        size: 8,
+                      ),
+                      if (i == 4 || i == 9) SizedBox(width: 4),
+                    ]
+                  ],
+                ),
+                SizedBox(height: 8.0), // Space between the rows of stars
+                Wrap(
+                  spacing: 4.0,
+                  alignment: WrapAlignment.center,
+                  children: [
+                    for (int i = 15; i < 25; i++) ...[
+                      Icon(
+                        Icons.star,
+                        color: i < int.parse(itemData!['starforce'])
+                            ? Colors.yellow
+                            : Colors.grey,
+                        size: 8,
+                      ),
+                      if (i == 20) SizedBox(width: 4),
+                    ]
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          SizedBox(height: 8),
+          itemData!['scroll_upgrade'] != '0'
+              ? Text(
+                  '${itemData!['item_name']} (+${itemData!['scroll_upgrade']})',
+                  style: TextStyle(color: Colors.orange, fontSize: 12),
+                )
+              : Text(
+                  '${itemData!['item_name']}',
+                  style: TextStyle(color: Colors.orange, fontSize: 12),
+                ),
+
+          SizedBox(height: 8),
+          if (itemData['potential_option_grade'] != null)
+            Text('(${itemData!['potential_option_grade']})',
+                style: TextStyle(color: Colors.purple)),
+          SizedBox(height: 8),
+
+          // Item icon and required level
+          Row(
+            children: [
+              Image.network(
+                imageUrl,
+                width: 50,
+                height: 50,
+              ),
+              SizedBox(width: 8),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('REQ LEV : 150',
+                      style: TextStyle(color: Colors.yellow, fontSize: 12)),
+                  Text('장비 분류 : 모자',
+                      style: TextStyle(color: Colors.white, fontSize: 12)),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(height: 8),
+
+          // Item stats
+          buildStatRow('STR', '+65',
+              additional: '(40 +25)', color: Colors.green),
+          buildStatRow('DEX', '+138',
+              additional: '(40 +33 +25)', color: Colors.green),
+          buildStatRow('INT', '+16',
+              additional: '(0 +16)', color: Colors.green),
+          buildStatRow('LUK', '+24',
+              additional: '(0 +24)', color: Colors.green),
+          buildStatRow('최대 HP', '+820',
+              additional: '(360 +130 +330)', color: Colors.green),
+          buildStatRow('최대 MP', '+360'),
+          buildStatRow('공격력', '+6', additional: '(0 +6)', color: Colors.green),
+          buildStatRow('마력', '+6', additional: '(0 +6)', color: Colors.green),
+          buildStatRow('방어력', '+820',
+              additional: '(300 +32 +33 +120)', color: Colors.green),
+
+          Divider(color: Colors.grey),
+
+          // Potential options
+          Row(
+            children: [
+              Icon(Icons.auto_awesome, color: Colors.purple, size: 12),
+              SizedBox(width: 4),
+              Text('잠재 옵션',
+                  style: TextStyle(color: Colors.purple, fontSize: 12)),
+            ],
+          ),
+          buildStatRow('DEX', '+6%', color: Colors.purple),
+          buildStatRow('방어력', '+120', color: Colors.purple),
+          buildStatRow('DEX', '+3%', color: Colors.purple),
+        ],
+      ),
+    );
+  }
+
+  Widget buildStatRow(String label, String value,
+      {String additional = '', Color color = Colors.white}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: Row(
+        children: [
+          Text('$label : ',
+              style: TextStyle(color: Colors.white, fontSize: 12)),
+          Text(value, style: TextStyle(color: color)),
+          if (additional.isNotEmpty)
+            Text(' $additional',
+                style: TextStyle(color: Colors.grey, fontSize: 12)),
+        ],
+      ),
+    );
+  }
+}

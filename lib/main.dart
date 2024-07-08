@@ -33,10 +33,17 @@ class _MyHomePageState extends State<MyHomePage> {
   List itemList = [];
   String androidIcon = '';
   String characterImage = '';
+  String power = '';
+  String world = '';
+  String level = '';
+  String exp = '';
+  String job = '';
+  String name = '';
   List<String> imageList = [];
 
   ////////////////////////
   void _fetchItem() async {
+    name = _controller.text;
     final characterName = Uri.encodeComponent(_controller.text);
     print(characterName);
     final response = await http.get(
@@ -99,6 +106,40 @@ class _MyHomePageState extends State<MyHomePage> {
       final Map<String, dynamic> data = json.decode(response4.body);
       setState(() {
         characterImage = data['character_image'];
+        world = data['world_name'];
+        job = data['character_class'];
+        level = data['character_level'].toString();
+        exp = data['character_exp_rate'] + '%';
+      });
+    }
+
+    final response5 = await http.get(
+      Uri.parse(
+          'https://open.api.nexon.com/maplestory/v1/character/stat?ocid=$_ocid'),
+      headers: {
+        'Accept': 'application/json',
+        'x-nxopen-api-key':
+            'test_c3c7513e49d03f4c0d14389cf14e274f5504d6b6b0f373662f022b8f07304e4b356397c41c1a3eef638d09601b2f4f18',
+      },
+    );
+
+    if (response5.statusCode == 200) {
+      print("전투력 fetch 성공");
+      final Map<String, dynamic> data = json.decode(response5.body);
+      setState(() {
+        power = data['final_stat'][42]['stat_value'];
+        if (power.length < 9) {
+          power = power.substring(0, power.length - 4) +
+              '만' +
+              power.substring(power.length - 4);
+        } else {
+          power = power.substring(0, power.length - 8) +
+              '억' +
+              power.substring(power.length - 8, power.length - 4) +
+              '만' +
+              power.substring(power.length - 4);
+        }
+        print(power);
       });
     }
 
@@ -137,8 +178,16 @@ class _MyHomePageState extends State<MyHomePage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                Equip(imageList: imageList, characterImage: characterImage),
+            builder: (context) => Equip(
+                imageList: imageList,
+                characterImage: characterImage,
+                power: power,
+                world: world,
+                level: level,
+                exp: exp,
+                job: job,
+                name: name,
+                data: data),
           ),
         );
       }
@@ -195,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
 const List<String> equipmentData = [
   '반지1',
   '',
-  '망토',
+  '모자',
   '',
   '엠블렘',
   '반지2',
