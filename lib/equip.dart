@@ -281,6 +281,8 @@ const List<Color> equipmentColors = [
   Colors.grey,
 ];
 
+List<Color> colors = [Colors.white, Colors.green, Colors.blue, Colors.orange];
+
 ///////////////////////////////////////////////////
 
 class ItemDetailCard extends StatelessWidget {
@@ -297,7 +299,6 @@ class ItemDetailCard extends StatelessWidget {
         break;
       }
     }
-    itemData;
 
     return Container(
       padding: EdgeInsets.all(8.0),
@@ -344,7 +345,7 @@ class ItemDetailCard extends StatelessWidget {
                             : Colors.grey,
                         size: 8,
                       ),
-                      if (i == 20) SizedBox(width: 4),
+                      if (i == 19) SizedBox(width: 4),
                     ]
                   ],
                 ),
@@ -365,10 +366,25 @@ class ItemDetailCard extends StatelessWidget {
           ),
 
           // SizedBox(height: 8),
-          if (itemData['potential_option_grade'] != null)
+          if (itemData['potential_option_grade'] == '레전드리')
+            Center(
+              child: Text('(${itemData!['potential_option_grade']})',
+                  style: TextStyle(color: Colors.greenAccent)),
+            ),
+          if (itemData['potential_option_grade'] == '유니크')
+            Center(
+              child: Text('(${itemData!['potential_option_grade']})',
+                  style: TextStyle(color: Colors.yellow)),
+            ),
+          if (itemData['potential_option_grade'] == '에픽')
             Center(
               child: Text('(${itemData!['potential_option_grade']})',
                   style: TextStyle(color: Colors.purple)),
+            ),
+          if (itemData['potential_option_grade'] == '레어')
+            Center(
+              child: Text('(${itemData!['potential_option_grade']})',
+                  style: TextStyle(color: Colors.blueAccent)),
             ),
           // SizedBox(height: 8),
 
@@ -400,57 +416,210 @@ class ItemDetailCard extends StatelessWidget {
               .toList()
               .map((entry) => buildStatRow(
                   optionData[entry.key]!, entry.value.toString(),
-                  additional:
-                      '(${itemData!['item_base_option'][entry.key]}+${itemData!['item_add_option'][entry.key]}+${itemData['item_etc_option'][entry.key]}+${itemData['item_starforce_option'][entry.key]})',
+                  additional: buildAdditionalString(entry.key, itemData!),
                   color: Colors.lightBlueAccent)),
-          // Item stats
-          // buildStatRow('STR', '+65',
-          //     additional: '(40 +25)', color: Colors.green),
-          // buildStatRow('DEX', '+138',
-          //     additional: '(40 +33 +25)', color: Colors.green),
-          // buildStatRow('INT', '+16',
-          //     additional: '(0 +16)', color: Colors.green),
-          // buildStatRow('LUK', '+24',
-          //     additional: '(0 +24)', color: Colors.green),
-          // buildStatRow('최대 HP', '+820',
-          //     additional: '(360 +130 +330)', color: Colors.green),
-          // buildStatRow('최대 MP', '+360'),
-          // buildStatRow('공격력', '+6', additional: '(0 +6)', color: Colors.green),
-          // buildStatRow('마력', '+6', additional: '(0 +6)', color: Colors.green),
-          // buildStatRow('방어력', '+820',
-          //     additional: '(300 +32 +33 +120)', color: Colors.green),
 
-          Divider(color: Colors.grey),
-
+          if (itemData['potential_option_1'] != null)
+            Divider(color: Colors.grey),
           // Potential options
-          Row(
-            children: [
-              Icon(Icons.auto_awesome, color: Colors.purple, size: 12),
-              SizedBox(width: 4),
-              Text('잠재 옵션',
-                  style: TextStyle(color: Colors.purple, fontSize: 12)),
-            ],
-          ),
-          buildStatRow('DEX', '+6%', color: Colors.purple),
-          buildStatRow('방어력', '+120', color: Colors.purple),
-          buildStatRow('DEX', '+3%', color: Colors.purple),
+          if (itemData['potential_option_1'] != null)
+            Row(
+              children: [
+                Icon(Icons.auto_awesome, color: Colors.greenAccent, size: 12),
+                SizedBox(width: 4),
+                Text('잠재 옵션',
+                    style: TextStyle(color: Colors.greenAccent, fontSize: 12)),
+              ],
+            ),
+          if (itemData['potential_option_1'] != null) ...[
+            if (itemData['potential_option_1']
+                .toString()
+                .split(':')[0]
+                .contains("재사용"))
+              buildStatRow(
+                  itemData['potential_option_1'].toString().split(':')[0],
+                  itemData['potential_option_1']
+                      .toString()
+                      .split(':')[1]
+                      .substring(0, 4),
+                  color: Colors.white)
+            else
+              buildStatRow(
+                  itemData['potential_option_1'].toString().split(':')[0],
+                  itemData['potential_option_1'].toString().split(':')[1],
+                  color: Colors.white),
+          ],
+          if (itemData['potential_option_2'] != null) ...[
+            if (itemData['potential_option_2']
+                .toString()
+                .split(':')[0]
+                .contains("재사용"))
+              buildStatRow(
+                  itemData['potential_option_2'].toString().split(':')[0],
+                  itemData['potential_option_2']
+                      .toString()
+                      .split(':')[1]
+                      .substring(0, 4),
+                  color: Colors.white)
+            else
+              buildStatRow(
+                  itemData['potential_option_2'].toString().split(':')[0],
+                  itemData['potential_option_2'].toString().split(':')[1],
+                  color: Colors.white),
+          ],
+          if (itemData['potential_option_3'] != null) ...[
+            if (itemData['potential_option_3']
+                .toString()
+                .split(':')[0]
+                .contains("재사용"))
+              buildStatRow(
+                  itemData['potential_option_3'].toString().split(':')[0],
+                  itemData['potential_option_3']
+                      .toString()
+                      .split(':')[1]
+                      .substring(0, 4),
+                  color: Colors.white)
+            else
+              buildStatRow(
+                  itemData['potential_option_3'].toString().split(':')[0],
+                  itemData['potential_option_3'].toString().split(':')[1],
+                  color: Colors.white),
+          ],
+          if (itemData['additional_potential_option_1'] != null)
+            Divider(color: Colors.grey),
+          if (itemData['additional_potential_option_1'] != null)
+            Row(
+              children: [
+                Icon(Icons.auto_awesome, color: Colors.greenAccent, size: 12),
+                SizedBox(width: 4),
+                Text('에디셔널 옵션',
+                    style: TextStyle(color: Colors.greenAccent, fontSize: 12)),
+              ],
+            ),
+          if (itemData['additional_potential_option_1'] != null) ...[
+            if (itemData['additional_potential_option_1']
+                .toString()
+                .split(':')[0]
+                .contains("재사용"))
+              buildStatRow(
+                  itemData['additional_potential_option_1']
+                      .toString()
+                      .split(':')[0],
+                  itemData['additional_potential_option_1']
+                      .toString()
+                      .split(':')[1]
+                      .substring(0, 4),
+                  color: Colors.white)
+            else
+              buildStatRow(
+                  itemData['additional_potential_option_1']
+                      .toString()
+                      .split(':')[0],
+                  itemData['additional_potential_option_1']
+                      .toString()
+                      .split(':')[1],
+                  color: Colors.white),
+          ],
+          if (itemData['additional_potential_option_2'] != null) ...[
+            if (itemData['additional_potential_option_2']
+                .toString()
+                .split(':')[0]
+                .contains("재사용"))
+              buildStatRow(
+                  itemData['additional_potential_option_2']
+                      .toString()
+                      .split(':')[0],
+                  itemData['additional_potential_option_2']
+                      .toString()
+                      .split(':')[1]
+                      .substring(0, 4),
+                  color: Colors.white)
+            else
+              buildStatRow(
+                  itemData['additional_potential_option_2']
+                      .toString()
+                      .split(':')[0],
+                  itemData['additional_potential_option_2']
+                      .toString()
+                      .split(':')[1],
+                  color: Colors.white),
+          ],
+          if (itemData['additional_potential_option_3'] != null) ...[
+            if (itemData['additional_potential_option_3']
+                .toString()
+                .split(':')[0]
+                .contains("재사용"))
+              buildStatRow(
+                  itemData['additional_potential_option_3']
+                      .toString()
+                      .split(':')[0],
+                  itemData['additional_potential_option_3']
+                      .toString()
+                      .split(':')[1]
+                      .substring(0, 4),
+                  color: Colors.white)
+            else
+              buildStatRow(
+                  itemData['additional_potential_option_3']
+                      .toString()
+                      .split(':')[0],
+                  itemData['additional_potential_option_3']
+                      .toString()
+                      .split(':')[1],
+                  color: Colors.white),
+          ],
         ],
       ),
     );
   }
 
+  String buildAdditionalString(String key, Map itemData) {
+    List<String> additionalValues = [
+      itemData['item_base_option'][key]?.toString() ?? '0',
+      itemData['item_add_option'][key]?.toString() ?? '0',
+      itemData['item_etc_option'][key]?.toString() ?? '0',
+      itemData['item_starforce_option'][key]?.toString() ?? '0'
+    ];
+
+    return '(' +
+        additionalValues
+            .where((value) => value != '0' && value != null)
+            .join('+') +
+        ')';
+  }
+
   Widget buildStatRow(String label, String value,
       {String additional = '', Color color = Colors.white}) {
+    List<String> additionalValues = additional
+        .replaceAll('(', '')
+        .replaceAll(')', '')
+        .split('+')
+        .where((value) => value.isNotEmpty)
+        .toList();
+    ;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Row(
         children: [
           Text('$label : ',
-              style: TextStyle(color: Colors.white, fontSize: 12)),
-          Text(value, style: TextStyle(color: color)),
+              style: TextStyle(color: Colors.white, fontSize: 10)),
+          Text(value, style: TextStyle(color: color, fontSize: 10)),
           if (additional.isNotEmpty)
-            Text(' $additional',
-                style: TextStyle(color: Colors.grey, fontSize: 12)),
+            RichText(
+              text: TextSpan(
+                children: List.generate(additionalValues.length, (index) {
+                  return TextSpan(
+                    text: (index == 0 ? ' (' : '+') +
+                        additionalValues[index] +
+                        (index == additionalValues.length - 1 ? ')' : ''),
+                    style: TextStyle(
+                      color: colors[index % colors.length],
+                      fontSize: 10,
+                    ),
+                  );
+                }),
+              ),
+            ),
         ],
       ),
     );

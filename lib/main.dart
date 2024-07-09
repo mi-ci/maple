@@ -203,41 +203,51 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Flutter Web Example'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                labelText: 'Enter Character Name',
-              ),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                _fetchItem(); // Corrected: Call _fetchItem() with ()
-              },
-              child: Text('Submit'),
-            ),
-            SizedBox(height: 16.0),
-            if (imageList.isNotEmpty)
-              Text(
-                '',
-                style: TextStyle(fontSize: 20.0),
-              ),
-            if (_error.isNotEmpty)
-              Text(
-                'Error: $_error',
-                style: TextStyle(fontSize: 20.0, color: Colors.red),
-              ),
-          ],
+        appBar: AppBar(
+          title: Text('Flutter Web Example'),
         ),
-      ),
-    );
+        body: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                image: AssetImage('assets/rest.png'),
+                fit: BoxFit.cover,
+              )),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      labelText: 'Enter Character Name',
+                    ),
+                  ),
+                  SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: () {
+                      _fetchItem(); // Corrected: Call _fetchItem() with ()
+                    },
+                    child: Text('Submit'),
+                  ),
+                  SizedBox(height: 16.0),
+                  if (imageList.isNotEmpty)
+                    Text(
+                      '',
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  if (_error.isNotEmpty)
+                    Text(
+                      'Error: $_error',
+                      style: TextStyle(fontSize: 20.0, color: Colors.red),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ));
   }
 }
 
